@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
+
+const categoryIcons = {
+  "AI": "fa-solid fa-robot",
+  "Machine Learning": "fa-solid fa-brain",
+  "Web Development": "fa-solid fa-code",
+  "Scalability": "fa-solid fa-server",
+  "Cybersecurity": "fa-solid fa-shield-halved",
+  "Quantum Computing": "fa-solid fa-atom",
+  "Physics": "fa-solid fa-flask",
+  "Data Science": "fa-solid fa-database",
+  "Social Impact": "fa-solid fa-hand-holding-heart",
+  "Serverless": "fa-solid fa-cloud",
+  "Cloud Computing": "fa-solid fa-cloud-upload-alt"
+};
 
 function App() {
   const [schedule, setSchedule] = useState([]);
@@ -29,9 +44,11 @@ function App() {
   let currentTime = new Date('2025-01-01T10:00:00');
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4 text-center">Event Schedule</h1>
-      <ul className="list-group">
+    <div>
+      <div className="header">
+        <div className="logo">EventName</div>
+      </div>
+      <div className="container">
         {scheduleWithBreaks.map((item, index) => {
           const startTime = new Date(currentTime);
           const durationParts = item.duration.split(' ');
@@ -45,23 +62,39 @@ function App() {
           }
           const endTime = new Date(currentTime);
 
-          return (
-            <li key={index} className={`list-group-item ${item.isBreak ? 'list-group-item-secondary' : ''}`}>
-              <div className="d-flex w-100 justify-content-between">
-                <h5 className="mb-1">{item.title}</h5>
-                <small>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
-              </div>
-              {!item.isBreak &&
-                <div>
-                  <p className="mb-1">{item.description}</p>
-                  <small><strong>Speakers:</strong> {item.speakers.join(', ')}</small><br />
-                  <small><strong>Category:</strong> {item.category.join(', ')}</small>
+          if (item.isBreak) {
+            return (
+              <div key={index} className="card break-card">
+                <div className="card-body">
+                  <h5 className="card-title">{item.title}</h5>
+                  <h6 className="card-subtitle mb-2 text-muted">{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</h6>
                 </div>
-              }
-            </li>
+              </div>
+            )
+          }
+
+          return (
+            <div key={index} className="card">
+              <div className="card-header">
+                {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+              <div className="card-body">
+                <h5 className="card-title">{item.title}</h5>
+                <h6 className="card-subtitle mb-2 text-muted">{item.speakers.join(', ')}</h6>
+                <p className="card-text">{item.description}</p>
+                <div>
+                  {item.category.map(cat => (
+                    <span key={cat} className="badge bg-primary me-2">
+                      <i className={`${categoryIcons[cat]} category-icon`}></i>
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
